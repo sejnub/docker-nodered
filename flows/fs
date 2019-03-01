@@ -1,0 +1,539 @@
+[
+    {
+        "id": "d8aa469a.84ddb8",
+        "type": "tab",
+        "label": "filesystem",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "6ce28577.f0c0ec",
+        "type": "comment",
+        "z": "d8aa469a.84ddb8",
+        "name": "################ Filesystem Browser ################",
+        "info": "\n# Locations of config files\n\n## Setting A: broker-core\n\nvar path = \"/data\"\nvar files = [\n    \".config.json\",\n    \".config.json.backup\",\n    \".flows.json.backup\",\n    \".flows_cred.json.backup\",\n    \"DeviceDataArray.bin\",\n    \"DeviceDataArray.proto\",\n    \"bcl.proto\",\n    \"cert.pem\",\n    \"flows.json\",\n    \"flows_cred.json\",\n    \"lib\",\n    \"node_modules\",\n    \"package-lock.json\",\n    \"package.json\",\n    \"private.pem\",\n    \"settings.js\"\n]\n\n\n## Setting B: SH\n\nvar path = \"/config/node-red/\"\nvar files = [\n    \".config.json\",\n    \".config.json.backup\",\n    \".flows.json.backup\",\n    \".flows_cred.json.backup\",\n    \".sessions.json\",\n    \"flows.json\",\n    \"flows_cred.json\",\n    \"lib\",\n    \"node_modules\",\n    \"nodes\",\n    \"package-lock.json\",\n    \"package.json\",\n    \"settings.js\"\n]\n\n",
+        "x": 220,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "16d4e2ec.898afd",
+        "type": "file in",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "x": 670,
+        "y": 660,
+        "wires": [
+            [
+                "9a9f4769.2aa708"
+            ]
+        ]
+    },
+    {
+        "id": "7fb6180b.80cef8",
+        "type": "http response",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "statusCode": "200",
+        "headers": {
+            "content-type": "text/plain"
+        },
+        "x": 1320,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "b6f1f3bf.6f89f",
+        "type": "fs-ops-dir",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "path": "filename",
+        "pathType": "msg",
+        "filter": "*",
+        "filterType": "str",
+        "dir": "payload",
+        "dirType": "msg",
+        "x": 940,
+        "y": 700,
+        "wires": [
+            [
+                "980c00a2.ff133"
+            ]
+        ]
+    },
+    {
+        "id": "980c00a2.ff133",
+        "type": "json",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "pretty": true,
+        "x": 1090,
+        "y": 700,
+        "wires": [
+            [
+                "7fb6180b.80cef8",
+                "8f474475.c8ebe8"
+            ]
+        ]
+    },
+    {
+        "id": "9a9f4769.2aa708",
+        "type": "function",
+        "z": "d8aa469a.84ddb8",
+        "name": "payload -> object if is JSON",
+        "func": "msg.is_json=true;\n\ntry {\n    result      = JSON.parse(msg.payload);\n    msg.payload = result\n    return [ null, msg ];\n} catch (e) {\n    msg.is_json=false;\n    return [ msg, null ];\n}\n\nreturn msg;\n",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 880,
+        "y": 660,
+        "wires": [
+            [
+                "7fb6180b.80cef8",
+                "8f474475.c8ebe8"
+            ],
+            [
+                "980c00a2.ff133"
+            ]
+        ],
+        "outputLabels": [
+            "String",
+            "JSON-Object"
+        ]
+    },
+    {
+        "id": "d6c8aba8.e11168",
+        "type": "fs-ops-type",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "path": "",
+        "pathType": "str",
+        "filename": "filename",
+        "filenameType": "msg",
+        "filetype": "type",
+        "filetypeType": "msg",
+        "x": 380,
+        "y": 680,
+        "wires": [
+            [
+                "838bcc0d.2bde5"
+            ]
+        ]
+    },
+    {
+        "id": "4d476602.d41248",
+        "type": "function",
+        "z": "d8aa469a.84ddb8",
+        "name": "Set msg.filename",
+        "func": "msg.filename = \"/\" + msg.req.params.l1\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 540,
+        "wires": [
+            [
+                "bb40fe38.cedda"
+            ]
+        ]
+    },
+    {
+        "id": "ecb072ee.9334b",
+        "type": "http in",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "url": "/fs/:l1",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 80,
+        "y": 540,
+        "wires": [
+            [
+                "4d476602.d41248"
+            ]
+        ]
+    },
+    {
+        "id": "25501f0a.29662",
+        "type": "fs-ops-access",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "path": "",
+        "pathType": "str",
+        "filename": "filename",
+        "filenameType": "msg",
+        "read": true,
+        "write": false,
+        "throwerror": false,
+        "x": 210,
+        "y": 700,
+        "wires": [
+            [
+                "d6c8aba8.e11168"
+            ],
+            [
+                "a08c24d3.37cf68"
+            ]
+        ]
+    },
+    {
+        "id": "a08c24d3.37cf68",
+        "type": "change",
+        "z": "d8aa469a.84ddb8",
+        "name": "File not found",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "File does not exist",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1120,
+        "y": 740,
+        "wires": [
+            [
+                "9e99c77b.9de238",
+                "2b72c06d.9618a"
+            ]
+        ]
+    },
+    {
+        "id": "838bcc0d.2bde5",
+        "type": "switch",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "property": "type",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "F",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "D",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 530,
+        "y": 680,
+        "wires": [
+            [
+                "16d4e2ec.898afd"
+            ],
+            [
+                "b6f1f3bf.6f89f"
+            ]
+        ]
+    },
+    {
+        "id": "9e99c77b.9de238",
+        "type": "http response",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "statusCode": "404",
+        "headers": {
+            "content-type": "text/html"
+        },
+        "x": 1320,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "2b72c06d.9618a",
+        "type": "debug",
+        "z": "d8aa469a.84ddb8",
+        "name": "error",
+        "active": true,
+        "console": false,
+        "complete": "filename",
+        "x": 1310,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "8f474475.c8ebe8",
+        "type": "debug",
+        "z": "d8aa469a.84ddb8",
+        "name": "Success",
+        "active": true,
+        "console": false,
+        "complete": "filename",
+        "x": 1320,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "f34e2aaf.04aae8",
+        "type": "function",
+        "z": "d8aa469a.84ddb8",
+        "name": "Set msg.filename",
+        "func": "msg.filename = \n    \"/\" + msg.req.params.l1 + \n    \"/\" + msg.req.params.l2\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 500,
+        "wires": [
+            [
+                "bb40fe38.cedda"
+            ]
+        ]
+    },
+    {
+        "id": "544b8851.3165d8",
+        "type": "http in",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "url": "/fs/:l1/:l2",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 500,
+        "wires": [
+            [
+                "f34e2aaf.04aae8"
+            ]
+        ]
+    },
+    {
+        "id": "bb40fe38.cedda",
+        "type": "function",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 610,
+        "y": 600,
+        "wires": [
+            [
+                "25501f0a.29662",
+                "77e3f932.5a0de8"
+            ]
+        ]
+    },
+    {
+        "id": "77e3f932.5a0de8",
+        "type": "debug",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "active": false,
+        "console": false,
+        "complete": "filename",
+        "x": 850,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "8e8fb884.cb23c8",
+        "type": "http in",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "url": "/fs/:l1/:l2/:l3",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 460,
+        "wires": [
+            [
+                "7e76e30e.b7456c"
+            ]
+        ]
+    },
+    {
+        "id": "7e76e30e.b7456c",
+        "type": "function",
+        "z": "d8aa469a.84ddb8",
+        "name": "Set msg.filename",
+        "func": "msg.filename = \n    \"/\" + msg.req.params.l1 + \n    \"/\" + msg.req.params.l2 + \n    \"/\" + msg.req.params.l3\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 460,
+        "wires": [
+            [
+                "bb40fe38.cedda"
+            ]
+        ]
+    },
+    {
+        "id": "ef074240.0dbc6",
+        "type": "http in",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "url": "/fs/:l1/:l2/:l3/:l4",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 420,
+        "wires": [
+            [
+                "c830d2b2.ba453"
+            ]
+        ]
+    },
+    {
+        "id": "c830d2b2.ba453",
+        "type": "function",
+        "z": "d8aa469a.84ddb8",
+        "name": "Set msg.filename",
+        "func": "msg.filename = \n    \"/\" + msg.req.params.l1 + \n    \"/\" + msg.req.params.l2 + \n    \"/\" + msg.req.params.l3 + \n    \"/\" + msg.req.params.l4\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 420,
+        "wires": [
+            [
+                "bb40fe38.cedda"
+            ]
+        ]
+    },
+    {
+        "id": "63550a89.61be44",
+        "type": "function",
+        "z": "d8aa469a.84ddb8",
+        "name": "Set msg.filename",
+        "func": "msg.filename = \n    \"/\" + msg.req.params.l1 + \n    \"/\" + msg.req.params.l2 + \n    \"/\" + msg.req.params.l3 + \n    \"/\" + msg.req.params.l4 + \n    \"/\" + msg.req.params.l5\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 380,
+        "wires": [
+            [
+                "bb40fe38.cedda"
+            ]
+        ]
+    },
+    {
+        "id": "975a7a78.e89558",
+        "type": "http in",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "url": "/fs/:l1/:l2/:l3/:l4/:l5",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 380,
+        "wires": [
+            [
+                "63550a89.61be44"
+            ]
+        ]
+    },
+    {
+        "id": "45f38f64.b317d",
+        "type": "http in",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "url": "/fs/:l1/:l2/:l3/:l4/:l5/:l6",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 340,
+        "wires": [
+            [
+                "e1948866.9893e8"
+            ]
+        ]
+    },
+    {
+        "id": "e1948866.9893e8",
+        "type": "function",
+        "z": "d8aa469a.84ddb8",
+        "name": "Set msg.filename",
+        "func": "msg.filename = \n    \"/\" + msg.req.params.l1 + \n    \"/\" + msg.req.params.l2 + \n    \"/\" + msg.req.params.l3 + \n    \"/\" + msg.req.params.l4 + \n    \"/\" + msg.req.params.l5 + \n    \"/\" + msg.req.params.l6\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 340,
+        "wires": [
+            [
+                "bb40fe38.cedda"
+            ]
+        ]
+    },
+    {
+        "id": "a8195619.53ecc8",
+        "type": "http in",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "url": "/fs/:l1/:l2/:l3/:l4/:l5/:l6/:l7",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 300,
+        "wires": [
+            [
+                "b9e5a3e1.16cd4"
+            ]
+        ]
+    },
+    {
+        "id": "b9e5a3e1.16cd4",
+        "type": "function",
+        "z": "d8aa469a.84ddb8",
+        "name": "Set msg.filename",
+        "func": "msg.filename = \n    \"/\" + msg.req.params.l1 + \n    \"/\" + msg.req.params.l2 + \n    \"/\" + msg.req.params.l3 + \n    \"/\" + msg.req.params.l4 + \n    \"/\" + msg.req.params.l5 + \n    \"/\" + msg.req.params.l6 + \n    \"/\" + msg.req.params.l7\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 300,
+        "wires": [
+            [
+                "bb40fe38.cedda"
+            ]
+        ]
+    },
+    {
+        "id": "8c83d93b.71c448",
+        "type": "http in",
+        "z": "d8aa469a.84ddb8",
+        "name": "",
+        "url": "/fs",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 70,
+        "y": 580,
+        "wires": [
+            [
+                "742ff483.1ef99c"
+            ]
+        ]
+    },
+    {
+        "id": "742ff483.1ef99c",
+        "type": "function",
+        "z": "d8aa469a.84ddb8",
+        "name": "Set msg.filename",
+        "func": "msg.filename = \"/\"\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 580,
+        "wires": [
+            [
+                "bb40fe38.cedda"
+            ]
+        ]
+    }
+]
