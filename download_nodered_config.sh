@@ -1,6 +1,18 @@
 #!/bin/bash
 
 #############
+# Changelog #
+#############
+
+# Find the newest version of this script at https://github.com/sejnub/docker-nodered/edit/master/download_nodered_config.sh
+#
+# 2019-03-01 11:25:48 
+# - Improved sourcecode readability 
+# - Improved echo outputs
+# 2019-03-06
+# - Added some comments
+
+#############
 # Constants #
 #############
 
@@ -14,15 +26,6 @@ tempdir=./temp_delete_me
 dest_prefix=$tempdir/
 
 source_prefix="/fs/data/"
-
-
-#############
-# Changelog #
-#############
-
-# 2019-03-01 11:25:48 
-# - Improved sourcecode readability 
-# - Improved echo outputs
 
 
 #######
